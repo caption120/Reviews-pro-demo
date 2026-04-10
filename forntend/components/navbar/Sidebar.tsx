@@ -32,11 +32,13 @@ const navItems = [
   },
 ];
 
-export default function Sidebar() {
-  const { pathname } = useRouter();
-  const [open, setOpen] = useState(false);
+type NavContentProps = {
+  pathname: string;
+  onNavigate: () => void;
+};
 
-  const NavContent = () => (
+function NavContent({ pathname, onNavigate }: NavContentProps) {
+  return (
     <>
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-6 border-b border-zinc-100">
@@ -61,7 +63,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setOpen(false)}
+              onClick={onNavigate}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${
                 isActive
                   ? "bg-violet-600 text-white shadow-md shadow-violet-200"
@@ -93,6 +95,11 @@ export default function Sidebar() {
       </div>
     </>
   );
+}
+
+export default function Sidebar() {
+  const { pathname } = useRouter();
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -133,12 +140,12 @@ export default function Sidebar() {
             </svg>
           </button>
         </div>
-        <NavContent />
+        <NavContent pathname={pathname} onNavigate={() => setOpen(false)} />
       </div>
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 min-h-screen bg-white border-r border-zinc-100 shadow-sm flex-shrink-0">
-        <NavContent />
+        <NavContent pathname={pathname} onNavigate={() => {}} />
       </aside>
     </>
   );
