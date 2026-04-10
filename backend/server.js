@@ -1,9 +1,10 @@
 require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
 
+const connectDB = require("./config/db");
 const businessRoutes = require("./routes/business");
+const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
@@ -17,16 +18,12 @@ app.use("/api/business", businessRoutes);
 // Health check
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
-// Connect to MongoDB then start server
+// Global error handler (must be last)
+app.use(errorHandler);
+
+// Connect DB then start server
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error("MongoDB connection failed:", err.message);
-    process.exit(1);
-  });
+connectDB().then(() => {
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+});
